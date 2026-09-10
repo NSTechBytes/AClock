@@ -2,7 +2,7 @@
   "name": "AClock",
   "main": "index.js",
   "version": "1.0.0.0",
-  "author": "nasirshahbaz",
+  "author": "nstechbytes",
   "description": "A sleek modern acrylic digital clock widget with system time, date, live seconds progress, and 12/24H format toggling.",
   "icon": "assets/icon.ico",
   "preview": "preview.jpg",

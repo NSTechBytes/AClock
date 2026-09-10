@@ -286,7 +286,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
   // 8. Seconds label: "57  SEC"
   ui.addText({
     id: "seconds_label",
-    x: Math.round(320 * s),
+    x: Math.round(450 * s),
     y: Math.round(190 * s),
     width: Math.round(135 * s),
     height: Math.round(24 * s),
