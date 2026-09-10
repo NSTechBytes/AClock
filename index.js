@@ -9,8 +9,11 @@ const STORAGE_KEYS = {
   SCALE: "AClock.scale",
   IS_24_HOUR: "AClock.is24Hour",
   BLUR_TYPE: "AClock.blurType",
-  CORNER_TYPE: "AClock.cornerType"
+  CORNER_TYPE: "AClock.cornerType",
+  THEME: "AClock.theme"
 };
+
+const VALID_THEMES = ["dark", "white", "github", "dracula", "material"];
 
 let clockWindow = null;
 let clockTimer = null;
@@ -21,6 +24,7 @@ let currentScale = 1.0;
 let is24Hour = true;
 let currentBlurType = "acrylic";       // "acrylic" | "blurbehind" | "none"
 let currentCornerType = "roundsmall";   // "roundsmall" | "round" | "none"
+let currentTheme = "dark";             // "dark" | "white" | "github" | "dracula" | "material"
 
 // Load persisted settings from app.storage using unique keys & clean up any legacy collision keys
 try {
@@ -46,12 +50,18 @@ try {
       currentCornerType = storedCorner;
     }
 
+    const storedTheme = app.storage.get(STORAGE_KEYS.THEME);
+    if (typeof storedTheme === "string" && VALID_THEMES.includes(storedTheme)) {
+      currentTheme = storedTheme;
+    }
+
     // Safely purge legacy un-prefixed keys so they never collide with other widgets
     if (typeof app.storage.remove === "function") {
       app.storage.remove("scale");
       app.storage.remove("cornerType");
       app.storage.remove("blurType");
       app.storage.remove("is24Hour");
+      app.storage.remove("theme");
     }
   }
 } catch (e) {
@@ -113,7 +123,8 @@ function getFormattedData() {
     is24Hour: is24Hour,
     scale: currentScale,
     cornerType: currentCornerType,
-    blurType: currentBlurType
+    blurType: currentBlurType,
+    theme: currentTheme
   };
 }
 
@@ -213,7 +224,33 @@ function setCornerType(newCorner) {
   publishClockData();
 }
 
+function setTheme(newTheme) {
+  currentTheme = newTheme;
+
+  try {
+    if (app && app.storage && typeof app.storage.set === "function") {
+      app.storage.set(STORAGE_KEYS.THEME, currentTheme);
+    }
+  } catch (e) {
+    console.log("Error saving theme to app.storage:", e);
+  }
+
+  if (clockWindow) {
+    clockWindow.setContextMenu(buildContextMenu(clockWindow));
+  }
+  ipcMain.send("themeUpdate", currentTheme);
+  publishClockData();
+}
+
 function buildContextMenu(win) {
+  const themeOptions = [
+    { label: "Dark", value: "dark" },
+    { label: "White", value: "white" },
+    { label: "Github", value: "github" },
+    { label: "Dracula", value: "dracula" },
+    { label: "Material UI", value: "material" }
+  ];
+
   const scaleOptions = [
     { label: "75%", value: 0.75 },
     { label: "100% (Default)", value: 1.0 },
@@ -239,6 +276,14 @@ function buildContextMenu(win) {
     {
       text: is24Hour ? "Switch to 12-Hour Format" : "Switch to 24-Hour Format",
       action: () => toggleTimeFormat()
+    },
+    {
+      text: "Theme",
+      items: themeOptions.map(opt => ({
+        text: opt.label,
+        checked: currentTheme === opt.value,
+        action: () => setTheme(opt.value)
+      }))
     },
     {
       text: "Scale",
@@ -312,6 +357,7 @@ function initWidget() {
       scale: currentScale,
       cornerType: currentCornerType,
       blurType: currentBlurType,
+      theme: currentTheme,
       is24Hour: is24Hour
     });
     publishClockData();
@@ -336,6 +382,12 @@ function initWidget() {
   ipcMain.on("setCorner", (event, newCorner) => {
     if (typeof newCorner === "string") {
       setCornerType(newCorner);
+    }
+  });
+
+  ipcMain.on("setTheme", (event, newTheme) => {
+    if (typeof newTheme === "string" && VALID_THEMES.includes(newTheme)) {
+      setTheme(newTheme);
     }
   });
 

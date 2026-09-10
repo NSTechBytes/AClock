@@ -1,6 +1,7 @@
 let currentScale = 1.0;
 let currentCornerType = "roundsmall"; // "roundsmall" | "round" | "none"
 let currentBlurType = "acrylic";       // "acrylic" | "blurbehind" | "none"
+let currentTheme = "dark";             // "dark" | "white" | "github" | "dracula" | "material"
 
 let lastTimeFormatted = "19<color=rgba(165,172,165,0.72)>:</color>40";
 let lastDateStr = "September 05, 2026";
@@ -25,6 +26,98 @@ const ALL_ELEMENT_IDS = [
   "footer_live"
 ];
 
+const THEMES = {
+  dark: {
+    cardBg: "rgba(22, 26, 24, 0.78)",
+    cardBgSolid: "rgba(22, 26, 24, 0.94)",
+    cardStroke: "rgba(255, 255, 255, 0.09)",
+    accentStrip: "rgba(255, 255, 255, 0.95)",
+    headerLabel: "rgba(160, 168, 160, 0.78)",
+    liveDot: "#ffffff",
+    clockTime: "#ffffff",
+    clockColon: "rgba(165, 172, 165, 0.72)",
+    dateText: "rgba(235, 240, 235, 0.95)",
+    dayText: "rgba(145, 152, 145, 0.78)",
+    secondsLabel: "rgba(225, 230, 225, 0.95)",
+    secondsUnit: "rgba(160, 160, 160, 0.8)",
+    barColor: "#ffffff",
+    barBg: "rgba(255, 255, 255, 0.2)",
+    footerText: "rgba(135, 142, 135, 0.72)"
+  },
+  white: {
+    cardBg: "rgba(255, 255, 255, 0.82)",
+    cardBgSolid: "rgba(255, 255, 255, 0.96)",
+    cardStroke: "rgba(0, 0, 0, 0.12)",
+    accentStrip: "#111827",
+    headerLabel: "rgba(75, 85, 99, 0.85)",
+    liveDot: "#111827",
+    clockTime: "#111827",
+    clockColon: "rgba(107, 114, 128, 0.75)",
+    dateText: "#1f2937",
+    dayText: "rgba(75, 85, 99, 0.9)",
+    secondsLabel: "#111827",
+    secondsUnit: "rgba(107, 114, 128, 0.85)",
+    barColor: "#111827",
+    barBg: "rgba(0, 0, 0, 0.12)",
+    footerText: "rgba(75, 85, 99, 0.85)"
+  },
+  github: {
+    cardBg: "rgba(13, 17, 23, 0.82)",
+    cardBgSolid: "rgba(13, 17, 23, 0.95)",
+    cardStroke: "rgba(48, 54, 61, 0.85)",
+    accentStrip: "#2ea043",
+    headerLabel: "#8b949e",
+    liveDot: "#2ea043",
+    clockTime: "#f0f6fc",
+    clockColon: "#58a6ff",
+    dateText: "#c9d1d9",
+    dayText: "#8b949e",
+    secondsLabel: "#f0f6fc",
+    secondsUnit: "#8b949e",
+    barColor: "#2ea043",
+    barBg: "rgba(110, 118, 129, 0.25)",
+    footerText: "#8b949e"
+  },
+  dracula: {
+    cardBg: "rgba(40, 42, 54, 0.84)",
+    cardBgSolid: "rgba(40, 42, 54, 0.96)",
+    cardStroke: "rgba(98, 114, 164, 0.45)",
+    accentStrip: "#bd93f9",
+    headerLabel: "#ff79c6",
+    liveDot: "#50fa7b",
+    clockTime: "#f8f8f2",
+    clockColon: "#ffb86c",
+    dateText: "#f8f8f2",
+    dayText: "#bd93f9",
+    secondsLabel: "#8be9fd",
+    secondsUnit: "#6272a4",
+    barColor: "#bd93f9",
+    barBg: "rgba(98, 114, 164, 0.3)",
+    footerText: "#6272a4"
+  },
+  material: {
+    cardBg: "rgba(18, 18, 18, 0.85)",
+    cardBgSolid: "rgba(18, 18, 18, 0.96)",
+    cardStroke: "rgba(255, 255, 255, 0.08)",
+    accentStrip: "#00e5ff",
+    headerLabel: "#90caf9",
+    liveDot: "#00e5ff",
+    clockTime: "#ffffff",
+    clockColon: "rgba(144, 202, 249, 0.75)",
+    dateText: "#e0e0e0",
+    dayText: "#00e5ff",
+    secondsLabel: "#ffffff",
+    secondsUnit: "rgba(255, 255, 255, 0.6)",
+    barColor: "#00e5ff",
+    barBg: "rgba(255, 255, 255, 0.16)",
+    footerText: "rgba(255, 255, 255, 0.6)"
+  }
+};
+
+function getTheme() {
+  return THEMES[currentTheme] || THEMES.dark;
+}
+
 function getCornerRadii(cornerType, s) {
   if (cornerType === "none") {
     return {
@@ -48,18 +141,16 @@ function getCornerRadii(cornerType, s) {
   }
 }
 
-function getCardFillColor(blurType) {
+function getCardFillColor(themeKey, blurType) {
+  const t = THEMES[themeKey] || THEMES.dark;
   if (blurType === "none") {
-    return "rgba(22, 26, 24, 0.92)"; // More opaque backdrop when blur is disabled
-  } else if (blurType === "blurbehind") {
-    return "rgba(22, 26, 24, 0.65)";
+    return t.cardBgSolid;
   } else {
-    // "acrylic"
-    return "rgba(22, 26, 24, 0.78)";
+    return t.cardBg;
   }
 }
 
-function renderUI(scale, cornerType, blurType) {
+function renderUI(scale, cornerType, blurType, themeKey) {
   if (typeof scale === "number" && scale > 0) {
     currentScale = scale;
   }
@@ -69,13 +160,17 @@ function renderUI(scale, cornerType, blurType) {
   if (typeof blurType === "string") {
     currentBlurType = blurType;
   }
+  if (typeof themeKey === "string" && THEMES[themeKey]) {
+    currentTheme = themeKey;
+  }
 
   const s = currentScale;
+  const t = getTheme();
   const W = Math.round(500 * s);
   const H = Math.round(290 * s);
 
   const radii = getCornerRadii(currentCornerType, s);
-  const cardBgColor = getCardFillColor(currentBlurType);
+  const cardBgColor = getCardFillColor(currentTheme, currentBlurType);
 
   ui.beginUpdate();
 
@@ -86,7 +181,7 @@ function renderUI(scale, cornerType, blurType) {
     }
   }
 
-  // 1. Frosted card backdrop with dynamic radius matching cornerType
+  // 1. Frosted card backdrop with dynamic radius matching cornerType and theme
   ui.addShape({
     id: "card_bg",
     type: "rectangle",
@@ -96,11 +191,11 @@ function renderUI(scale, cornerType, blurType) {
     height: H,
     radius: radii.cardRadius,
     fillColor: cardBgColor,
-    strokeColor: "rgba(255, 255, 255, 0.09)",
+    strokeColor: t.cardStroke,
     strokeWidth: Math.max(1, Math.round(1 * s))
   });
 
-  // 2. Left white vertical accent bar with matching corner radius
+  // 2. Left vertical accent bar with matching corner radius and theme accent
   ui.addShape({
     id: "left_accent_strip",
     type: "rectangle",
@@ -110,7 +205,7 @@ function renderUI(scale, cornerType, blurType) {
     height: H,
     radiusX: radii.accentRadiusX,
     radiusY: radii.accentRadiusY,
-    fillColor: "rgba(255, 255, 255, 0.95)",
+    fillColor: t.accentStrip,
     strokeWidth: 0
   });
 
@@ -125,7 +220,7 @@ function renderUI(scale, cornerType, blurType) {
     fontFace: "Segoe UI",
     fontSize: Math.round(12 * s),
     fontWeight: "semibold",
-    fontColor: "rgba(160, 168, 160, 0.78)",
+    fontColor: t.headerLabel,
     letterSpacing: Math.max(1, Math.round(3 * s)),
     textAlign: "left"
   });
@@ -138,7 +233,7 @@ function renderUI(scale, cornerType, blurType) {
     y: Math.round(38 * s),
     width: Math.max(6, Math.round(9 * s)),
     height: Math.max(6, Math.round(9 * s)),
-    fillColor: "#ffffff",
+    fillColor: t.liveDot,
     strokeWidth: 0
   });
 
@@ -153,7 +248,7 @@ function renderUI(scale, cornerType, blurType) {
     fontFace: "Consolas",
     fontSize: Math.round(84 * s),
     fontWeight: "bold",
-    fontColor: "#ffffff",
+    fontColor: t.clockTime,
     textAlign: "left"
   });
 
@@ -168,7 +263,7 @@ function renderUI(scale, cornerType, blurType) {
     fontFace: "Segoe UI",
     fontSize: Math.round(16 * s),
     fontWeight: "normal",
-    fontColor: "rgba(235, 240, 235, 0.95)",
+    fontColor: t.dateText,
     textAlign: "left"
   });
 
@@ -183,7 +278,7 @@ function renderUI(scale, cornerType, blurType) {
     fontFace: "Segoe UI",
     fontSize: Math.round(13 * s),
     fontWeight: "semibold",
-    fontColor: "rgba(145, 152, 145, 0.78)",
+    fontColor: t.dayText,
     letterSpacing: Math.max(1, Math.round(2 * s)),
     textAlign: "left"
   });
@@ -199,7 +294,7 @@ function renderUI(scale, cornerType, blurType) {
     fontFace: "Segoe UI",
     fontSize: Math.round(15 * s),
     fontWeight: "semibold",
-    fontColor: "rgba(225, 230, 225, 0.95)",
+    fontColor: t.secondsLabel,
     textAlign: "right"
   });
 
@@ -211,8 +306,8 @@ function renderUI(scale, cornerType, blurType) {
     width: Math.round(130 * s),
     height: Math.max(2, Math.round(3 * s)),
     value: lastProgress,
-    barColor: "#ffffff",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    barColor: t.barColor,
+    backgroundColor: t.barBg,
     barCornerRadius: Math.round(1.5 * s),
     backgroundColorRadius: Math.round(1.5 * s)
   });
@@ -228,7 +323,7 @@ function renderUI(scale, cornerType, blurType) {
     fontFace: "Segoe UI",
     fontSize: Math.round(12 * s),
     fontWeight: "semibold",
-    fontColor: "rgba(135, 142, 135, 0.72)",
+    fontColor: t.footerText,
     letterSpacing: Math.max(1, Math.round(2 * s)),
     textAlign: "left"
   });
@@ -244,7 +339,7 @@ function renderUI(scale, cornerType, blurType) {
     fontFace: "Segoe UI",
     fontSize: Math.round(12 * s),
     fontWeight: "semibold",
-    fontColor: "rgba(135, 142, 135, 0.72)",
+    fontColor: t.footerText,
     letterSpacing: Math.max(1, Math.round(2 * s)),
     textAlign: "center",
     mouseEventCursor: true,
@@ -265,7 +360,7 @@ function renderUI(scale, cornerType, blurType) {
     fontFace: "Segoe UI",
     fontSize: Math.round(12 * s),
     fontWeight: "semibold",
-    fontColor: "rgba(135, 142, 135, 0.72)",
+    fontColor: t.footerText,
     letterSpacing: Math.max(1, Math.round(2 * s)),
     textAlign: "right"
   });
@@ -274,7 +369,7 @@ function renderUI(scale, cornerType, blurType) {
 }
 
 // Initial render
-renderUI(1.0, "roundsmall", "acrylic");
+renderUI(1.0, "roundsmall", "acrylic", "dark");
 
 // Initial settings synchronization
 ipcRenderer.on("initSettings", function (event, settings) {
@@ -282,13 +377,14 @@ ipcRenderer.on("initSettings", function (event, settings) {
   if (typeof settings.scale === "number") currentScale = settings.scale;
   if (typeof settings.cornerType === "string") currentCornerType = settings.cornerType;
   if (typeof settings.blurType === "string") currentBlurType = settings.blurType;
-  renderUI(currentScale, currentCornerType, currentBlurType);
+  if (typeof settings.theme === "string" && THEMES[settings.theme]) currentTheme = settings.theme;
+  renderUI(currentScale, currentCornerType, currentBlurType, currentTheme);
 });
 
 // Scale change event
 ipcRenderer.on("scaleUpdate", function (event, newScale) {
   if (typeof newScale === "number" && newScale > 0) {
-    renderUI(newScale, currentCornerType, currentBlurType);
+    renderUI(newScale, currentCornerType, currentBlurType, currentTheme);
   }
 });
 
@@ -296,7 +392,7 @@ ipcRenderer.on("scaleUpdate", function (event, newScale) {
 ipcRenderer.on("cornerUpdate", function (event, newCorner) {
   if (typeof newCorner === "string") {
     currentCornerType = newCorner;
-    renderUI(currentScale, currentCornerType, currentBlurType);
+    renderUI(currentScale, currentCornerType, currentBlurType, currentTheme);
   }
 });
 
@@ -304,7 +400,15 @@ ipcRenderer.on("cornerUpdate", function (event, newCorner) {
 ipcRenderer.on("blurUpdate", function (event, newBlur) {
   if (typeof newBlur === "string") {
     currentBlurType = newBlur;
-    renderUI(currentScale, currentCornerType, currentBlurType);
+    renderUI(currentScale, currentCornerType, currentBlurType, currentTheme);
+  }
+});
+
+// Theme change event
+ipcRenderer.on("themeUpdate", function (event, newTheme) {
+  if (typeof newTheme === "string" && THEMES[newTheme]) {
+    currentTheme = newTheme;
+    renderUI(currentScale, currentCornerType, currentBlurType, currentTheme);
   }
 });
 
@@ -325,11 +429,16 @@ ipcRenderer.on("clockUpdate", function (event, data) {
     currentBlurType = data.blurType;
     needsReRender = true;
   }
+  if (typeof data.theme === "string" && data.theme !== currentTheme && THEMES[data.theme]) {
+    currentTheme = data.theme;
+    needsReRender = true;
+  }
 
   const s = currentScale;
+  const t = getTheme();
   const secSize = Math.max(9, Math.round(12 * s));
-  lastTimeFormatted = data.hour + "<color=rgba(165,172,165,0.72)>:</color>" + data.minute;
-  lastSecFormatted = data.secondStr + "  <size=" + secSize + "><color=rgba(160,165,160,0.8)>SEC</color></size>";
+  lastTimeFormatted = data.hour + "<color=" + t.clockColon + ">:</color>" + data.minute;
+  lastSecFormatted = data.secondStr + "  <size=" + secSize + "><color=" + t.secondsUnit + ">SEC</color></size>";
   lastDateStr = data.dateStr;
   lastDayStr = data.dayStr;
   lastProgress = Math.max(0, Math.min(1, data.second / 59));
@@ -337,7 +446,7 @@ ipcRenderer.on("clockUpdate", function (event, data) {
   lastLocalText = data.is24Hour ? "LOCAL" : ("LOCAL " + data.period);
 
   if (needsReRender) {
-    renderUI(currentScale, currentCornerType, currentBlurType);
+    renderUI(currentScale, currentCornerType, currentBlurType, currentTheme);
     return;
   }
 
