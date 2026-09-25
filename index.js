@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 nstechbytes
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * You may obtain a copy of the License at:
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { widgetWindow, addon, app } from "novadesk";
 import * as system from "system";
 
@@ -10,7 +24,7 @@ const STORAGE_KEYS = {
   IS_24_HOUR: "AClock.is24Hour",
   BLUR_TYPE: "AClock.blurType",
   CORNER_TYPE: "AClock.cornerType",
-  THEME: "AClock.theme"
+  THEME: "AClock.theme",
 };
 
 const VALID_THEMES = ["dark", "white", "github", "dracula", "material"];
@@ -22,9 +36,9 @@ let blurBehind = null;
 // Settings with defaults
 let currentScale = 1.0;
 let is24Hour = true;
-let currentBlurType = "acrylic";       // "acrylic" | "blurbehind" | "none"
-let currentCornerType = "roundsmall";   // "roundsmall" | "round" | "none"
-let currentTheme = "dark";             // "dark" | "white" | "github" | "dracula" | "material"
+let currentBlurType = "acrylic"; // "acrylic" | "blurbehind" | "none"
+let currentCornerType = "roundsmall"; // "roundsmall" | "round" | "none"
+let currentTheme = "dark"; // "dark" | "white" | "github" | "dracula" | "material"
 
 // Load persisted settings from app.storage using unique keys & clean up any legacy collision keys
 try {
@@ -41,12 +55,18 @@ try {
     }
 
     const storedBlur = app.storage.get(STORAGE_KEYS.BLUR_TYPE);
-    if (typeof storedBlur === "string" && ["acrylic", "blurbehind", "none"].includes(storedBlur)) {
+    if (
+      typeof storedBlur === "string" &&
+      ["acrylic", "blurbehind", "none"].includes(storedBlur)
+    ) {
       currentBlurType = storedBlur;
     }
 
     const storedCorner = app.storage.get(STORAGE_KEYS.CORNER_TYPE);
-    if (typeof storedCorner === "string" && ["roundsmall", "round", "none"].includes(storedCorner)) {
+    if (
+      typeof storedCorner === "string" &&
+      ["roundsmall", "round", "none"].includes(storedCorner)
+    ) {
       currentCornerType = storedCorner;
     }
 
@@ -81,11 +101,27 @@ function getFormattedData() {
   const now = new Date();
 
   const MONTHS = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   const DAYS = [
-    "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"
+    "SUNDAY",
+    "MONDAY",
+    "TUESDAY",
+    "WEDNESDAY",
+    "THURSDAY",
+    "FRIDAY",
+    "SATURDAY",
   ];
 
   const rawHours = now.getHours();
@@ -124,7 +160,7 @@ function getFormattedData() {
     scale: currentScale,
     cornerType: currentCornerType,
     blurType: currentBlurType,
-    theme: currentTheme
+    theme: currentTheme,
   };
 }
 
@@ -248,7 +284,7 @@ function buildContextMenu(win) {
     { label: "White", value: "white" },
     { label: "Github", value: "github" },
     { label: "Dracula", value: "dracula" },
-    { label: "Material UI", value: "material" }
+    { label: "Material UI", value: "material" },
   ];
 
   const scaleOptions = [
@@ -257,57 +293,57 @@ function buildContextMenu(win) {
     { label: "125%", value: 1.25 },
     { label: "150%", value: 1.5 },
     { label: "175%", value: 1.75 },
-    { label: "200%", value: 2.0 }
+    { label: "200%", value: 2.0 },
   ];
 
   const blurOptions = [
     { label: "Acrylic", value: "acrylic" },
     { label: "Blur", value: "blurbehind" },
-    { label: "None", value: "none" }
+    { label: "None", value: "none" },
   ];
 
   const cornerOptions = [
     { label: "Round Small", value: "roundsmall" },
     { label: "Round", value: "round" },
-    { label: "None", value: "none" }
+    { label: "None", value: "none" },
   ];
 
   return [
     {
       text: is24Hour ? "Switch to 12-Hour Format" : "Switch to 24-Hour Format",
-      action: () => toggleTimeFormat()
+      action: () => toggleTimeFormat(),
     },
     {
       text: "Theme",
-      items: themeOptions.map(opt => ({
+      items: themeOptions.map((opt) => ({
         text: opt.label,
         checked: currentTheme === opt.value,
-        action: () => setTheme(opt.value)
-      }))
+        action: () => setTheme(opt.value),
+      })),
     },
     {
       text: "Scale",
-      items: scaleOptions.map(opt => ({
+      items: scaleOptions.map((opt) => ({
         text: opt.label,
         checked: Math.abs(currentScale - opt.value) < 0.01,
-        action: () => setScale(opt.value)
-      }))
+        action: () => setScale(opt.value),
+      })),
     },
     {
       text: "Blur Effect",
-      items: blurOptions.map(opt => ({
+      items: blurOptions.map((opt) => ({
         text: opt.label,
         checked: currentBlurType === opt.value,
-        action: () => setBlurType(opt.value)
-      }))
+        action: () => setBlurType(opt.value),
+      })),
     },
     {
       text: "Corners",
-      items: cornerOptions.map(opt => ({
+      items: cornerOptions.map((opt) => ({
         text: opt.label,
         checked: currentCornerType === opt.value,
-        action: () => setCornerType(opt.value)
-      }))
+        action: () => setCornerType(opt.value),
+      })),
     },
     { type: "separator" },
     {
@@ -316,7 +352,7 @@ function buildContextMenu(win) {
         if (win && typeof win.refresh === "function") {
           win.refresh();
         }
-      }
+      },
     },
     {
       text: "Close AClock",
@@ -328,8 +364,8 @@ function buildContextMenu(win) {
         if (win && typeof win.close === "function") {
           win.close();
         }
-      }
-    }
+      },
+    },
   ];
 }
 
@@ -346,7 +382,7 @@ function initWidget() {
     draggable: true,
     snapEdges: true,
     keepOnScreen: true,
-    show: true
+    show: true,
   });
 
   applyWindowBlur(clockWindow);
@@ -358,7 +394,7 @@ function initWidget() {
       cornerType: currentCornerType,
       blurType: currentBlurType,
       theme: currentTheme,
-      is24Hour: is24Hour
+      is24Hour: is24Hour,
     });
     publishClockData();
   });

@@ -1,12 +1,27 @@
+/*
+ * Copyright (c) 2026 nstechbytes
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * You may obtain a copy of the License at:
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 let currentScale = 1.0;
 let currentCornerType = "roundsmall"; // "roundsmall" | "round" | "none"
-let currentBlurType = "acrylic";       // "acrylic" | "blurbehind" | "none"
-let currentTheme = "dark";             // "dark" | "white" | "github" | "dracula" | "material"
+let currentBlurType = "acrylic"; // "acrylic" | "blurbehind" | "none"
+let currentTheme = "dark"; // "dark" | "white" | "github" | "dracula" | "material"
 
 let lastTimeFormatted = "19<color=rgba(165,172,165,0.72)>:</color>40";
 let lastDateStr = "September 05, 2026";
 let lastDayStr = "SATURDAY";
-let lastSecFormatted = "57  <size=12><color=rgba(160,165,160,0.8)>SEC</color></size>";
+let lastSecFormatted =
+  "57  <size=12><color=rgba(160,165,160,0.8)>SEC</color></size>";
 let lastProgress = 0.95;
 let lastLocalText = "LOCAL";
 let lastFormatStr = "24H";
@@ -23,7 +38,7 @@ const ALL_ELEMENT_IDS = [
   "seconds_bar",
   "footer_local",
   "footer_format",
-  "footer_live"
+  "footer_live",
 ];
 
 const THEMES = {
@@ -42,7 +57,7 @@ const THEMES = {
     secondsUnit: "rgba(160, 160, 160, 0.8)",
     barColor: "#ffffff",
     barBg: "rgba(255, 255, 255, 0.2)",
-    footerText: "rgba(135, 142, 135, 0.72)"
+    footerText: "rgba(135, 142, 135, 0.72)",
   },
   white: {
     cardBg: "rgba(255, 255, 255, 0.82)",
@@ -59,7 +74,7 @@ const THEMES = {
     secondsUnit: "rgba(107, 114, 128, 0.85)",
     barColor: "#111827",
     barBg: "rgba(0, 0, 0, 0.12)",
-    footerText: "rgba(75, 85, 99, 0.85)"
+    footerText: "rgba(75, 85, 99, 0.85)",
   },
   github: {
     cardBg: "rgba(13, 17, 23, 0.82)",
@@ -76,7 +91,7 @@ const THEMES = {
     secondsUnit: "#8b949e",
     barColor: "#2ea043",
     barBg: "rgba(110, 118, 129, 0.25)",
-    footerText: "#8b949e"
+    footerText: "#8b949e",
   },
   dracula: {
     cardBg: "rgba(40, 42, 54, 0.84)",
@@ -93,7 +108,7 @@ const THEMES = {
     secondsUnit: "#6272a4",
     barColor: "#bd93f9",
     barBg: "rgba(98, 114, 164, 0.3)",
-    footerText: "#6272a4"
+    footerText: "#6272a4",
   },
   material: {
     cardBg: "rgba(18, 18, 18, 0.85)",
@@ -110,8 +125,8 @@ const THEMES = {
     secondsUnit: "rgba(255, 255, 255, 0.6)",
     barColor: "#00e5ff",
     barBg: "rgba(255, 255, 255, 0.16)",
-    footerText: "rgba(255, 255, 255, 0.6)"
-  }
+    footerText: "rgba(255, 255, 255, 0.6)",
+  },
 };
 
 function getTheme() {
@@ -123,20 +138,20 @@ function getCornerRadii(cornerType, s) {
     return {
       cardRadius: 0,
       accentRadiusX: 0,
-      accentRadiusY: 0
+      accentRadiusY: 0,
     };
   } else if (cornerType === "round") {
     return {
       cardRadius: Math.round(18 * s),
       accentRadiusX: Math.round(8 * s),
-      accentRadiusY: Math.round(8 * s)
+      accentRadiusY: Math.round(8 * s),
     };
   } else {
     // "roundsmall"
     return {
       cardRadius: Math.round(10 * s),
       accentRadiusX: Math.round(4 * s),
-      accentRadiusY: Math.round(4 * s)
+      accentRadiusY: Math.round(4 * s),
     };
   }
 }
@@ -192,7 +207,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     radius: radii.cardRadius,
     fillColor: cardBgColor,
     strokeColor: t.cardStroke,
-    strokeWidth: Math.max(1, Math.round(1 * s))
+    strokeWidth: Math.max(1, Math.round(1 * s)),
   });
 
   // 2. Left vertical accent bar with matching corner radius and theme accent
@@ -206,7 +221,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     radiusX: radii.accentRadiusX,
     radiusY: radii.accentRadiusY,
     fillColor: t.accentStrip,
-    strokeWidth: 0
+    strokeWidth: 0,
   });
 
   // 3. Header: "SYSTEM TIME"
@@ -222,7 +237,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     fontWeight: "semibold",
     fontColor: t.headerLabel,
     letterSpacing: Math.max(1, Math.round(3 * s)),
-    textAlign: "left"
+    textAlign: "left",
   });
 
   // 4. Top-right live indicator dot
@@ -234,7 +249,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     width: Math.max(6, Math.round(9 * s)),
     height: Math.max(6, Math.round(9 * s)),
     fillColor: t.liveDot,
-    strokeWidth: 0
+    strokeWidth: 0,
   });
 
   // 5. Clock time display (Hours & Minutes with dimmed colon, slashed-zero Consolas font)
@@ -249,7 +264,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     fontSize: Math.round(84 * s),
     fontWeight: "bold",
     fontColor: t.clockTime,
-    textAlign: "left"
+    textAlign: "left",
   });
 
   // 6. Date display: "September 05, 2026"
@@ -264,7 +279,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     fontSize: Math.round(16 * s),
     fontWeight: "normal",
     fontColor: t.dateText,
-    textAlign: "left"
+    textAlign: "left",
   });
 
   // 7. Day of week display: "SATURDAY"
@@ -280,7 +295,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     fontWeight: "semibold",
     fontColor: t.dayText,
     letterSpacing: Math.max(1, Math.round(2 * s)),
-    textAlign: "left"
+    textAlign: "left",
   });
 
   // 8. Seconds label: "57  SEC"
@@ -295,7 +310,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     fontSize: Math.round(15 * s),
     fontWeight: "semibold",
     fontColor: t.secondsLabel,
-    textAlign: "right"
+    textAlign: "right",
   });
 
   // 9. Horizontal seconds progress bar
@@ -309,7 +324,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     barColor: t.barColor,
     backgroundColor: t.barBg,
     barCornerRadius: Math.round(1.5 * s),
-    backgroundColorRadius: Math.round(1.5 * s)
+    backgroundColorRadius: Math.round(1.5 * s),
   });
 
   // 10. Footer: "LOCAL"
@@ -325,7 +340,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     fontWeight: "semibold",
     fontColor: t.footerText,
     letterSpacing: Math.max(1, Math.round(2 * s)),
-    textAlign: "left"
+    textAlign: "left",
   });
 
   // 11. Footer: "24H" / "12H" (Interactive button to toggle format)
@@ -346,7 +361,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     tooltipText: "Click to toggle 12H / 24H format",
     onLeftMouseUp: function () {
       ipcRenderer.send("toggleFormat");
-    }
+    },
   });
 
   // 12. Footer: "LIVE"
@@ -362,7 +377,7 @@ function renderUI(scale, cornerType, blurType, themeKey) {
     fontWeight: "semibold",
     fontColor: t.footerText,
     letterSpacing: Math.max(1, Math.round(2 * s)),
-    textAlign: "right"
+    textAlign: "right",
   });
 
   ui.endUpdate();
@@ -375,9 +390,12 @@ renderUI(1.0, "roundsmall", "acrylic", "dark");
 ipcRenderer.on("initSettings", function (event, settings) {
   if (!settings) return;
   if (typeof settings.scale === "number") currentScale = settings.scale;
-  if (typeof settings.cornerType === "string") currentCornerType = settings.cornerType;
-  if (typeof settings.blurType === "string") currentBlurType = settings.blurType;
-  if (typeof settings.theme === "string" && THEMES[settings.theme]) currentTheme = settings.theme;
+  if (typeof settings.cornerType === "string")
+    currentCornerType = settings.cornerType;
+  if (typeof settings.blurType === "string")
+    currentBlurType = settings.blurType;
+  if (typeof settings.theme === "string" && THEMES[settings.theme])
+    currentTheme = settings.theme;
   renderUI(currentScale, currentCornerType, currentBlurType, currentTheme);
 });
 
@@ -417,11 +435,17 @@ ipcRenderer.on("clockUpdate", function (event, data) {
   if (!data) return;
 
   let needsReRender = false;
-  if (typeof data.scale === "number" && Math.abs(data.scale - currentScale) > 0.01) {
+  if (
+    typeof data.scale === "number" &&
+    Math.abs(data.scale - currentScale) > 0.01
+  ) {
     currentScale = data.scale;
     needsReRender = true;
   }
-  if (typeof data.cornerType === "string" && data.cornerType !== currentCornerType) {
+  if (
+    typeof data.cornerType === "string" &&
+    data.cornerType !== currentCornerType
+  ) {
     currentCornerType = data.cornerType;
     needsReRender = true;
   }
@@ -429,7 +453,11 @@ ipcRenderer.on("clockUpdate", function (event, data) {
     currentBlurType = data.blurType;
     needsReRender = true;
   }
-  if (typeof data.theme === "string" && data.theme !== currentTheme && THEMES[data.theme]) {
+  if (
+    typeof data.theme === "string" &&
+    data.theme !== currentTheme &&
+    THEMES[data.theme]
+  ) {
     currentTheme = data.theme;
     needsReRender = true;
   }
@@ -437,13 +465,20 @@ ipcRenderer.on("clockUpdate", function (event, data) {
   const s = currentScale;
   const t = getTheme();
   const secSize = Math.max(9, Math.round(12 * s));
-  lastTimeFormatted = data.hour + "<color=" + t.clockColon + ">:</color>" + data.minute;
-  lastSecFormatted = data.secondStr + "  <size=" + secSize + "><color=" + t.secondsUnit + ">SEC</color></size>";
+  lastTimeFormatted =
+    data.hour + "<color=" + t.clockColon + ">:</color>" + data.minute;
+  lastSecFormatted =
+    data.secondStr +
+    "  <size=" +
+    secSize +
+    "><color=" +
+    t.secondsUnit +
+    ">SEC</color></size>";
   lastDateStr = data.dateStr;
   lastDayStr = data.dayStr;
   lastProgress = Math.max(0, Math.min(1, data.second / 59));
   lastFormatStr = data.formatStr;
-  lastLocalText = data.is24Hour ? "LOCAL" : ("LOCAL " + data.period);
+  lastLocalText = data.is24Hour ? "LOCAL" : "LOCAL " + data.period;
 
   if (needsReRender) {
     renderUI(currentScale, currentCornerType, currentBlurType, currentTheme);
