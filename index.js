@@ -353,19 +353,7 @@ function buildContextMenu(win) {
           win.refresh();
         }
       },
-    },
-    {
-      text: "Close AClock",
-      action: () => {
-        if (clockTimer) {
-          clearInterval(clockTimer);
-          clockTimer = null;
-        }
-        if (win && typeof win.close === "function") {
-          win.close();
-        }
-      },
-    },
+    }
   ];
 }
 
