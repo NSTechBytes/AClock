@@ -6,7 +6,9 @@
   "description": "A sleek modern acrylic digital clock widget with system time, date, live seconds progress, and 12/24H format toggling.",
   "icon": "assets/icon.ico",
   "preview": "preview.jpg",
-  "excludeItems": [],
+    "excludeItems": [
+    ".git","dist"
+  ],
   "setup": {
     "createDesktopShortcut": true,
     "createStartupShortcut": false,
