@@ -69,7 +69,6 @@ All widget settings can be configured at any time by right-clicking on the widge
 | **Blur Effect** | Acrylic, Blur, None | Controls window backdrop transparency and blur effect |
 | **Corners** | Round Small, Round, None | Sets the window corner rounding style |
 | **Reload Widget** | Action | Refreshes the widget UI |
-| **Close AClock** | Action | Exits the clock widget |
 
 Settings are automatically saved across sessions using Novadesk's persistent storage (`app.storage`).
 
